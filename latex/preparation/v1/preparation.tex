@@ -1,0 +1,847 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{circuitikz}
+\usepackage{pgfplots}
+\usepackage{float}
+\pgfplotsset{compat=1.18}
+
+\geometry{margin=2cm}
+
+% Configuration de l'en-tête
+\pagestyle{fancy}
+\fancyhf{} % Efface tous les en-têtes et pieds de page
+
+% En-tête gauche
+\fancyhead[L]{%
+    \begin{tabular}[t]{@{}l@{}}
+        \textbf{Nom:} KALIPE \\
+        \textbf{Prénoms:} Kossi Mathias
+    \end{tabular}%
+}
+
+% En-tête droite
+\fancyhead[R]{%
+    \begin{tabular}[t]{@{}l@{}}
+        \textbf{}  \\
+        \textbf{N° Étudiant:} 21507247
+    \end{tabular}%
+}
+
+% Ligne horizontale sous l'en-tête
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Pied de page (numéro de page centré)
+\fancyfoot[C]{\thepage}
+
+\title{\textbf{Préparation au TP\\Modulation d'Amplitude}}
+\author{Électronique des Systèmes Analogiques\\M1 SYSCOM | UM4EE101 - Sorbonne Université \\ \\ \textbf{N° Étudiant:} 21507247 \\ \textbf{Nom et prénoms:} KALIPE Kossi Mathias}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+
+On désire transmettre par onde hertzienne un signal audio $S(t)$ dont le spectre s'étale sur une plage allant de 100 Hz à 3 kHz. La transmission directe de ce signal est impossible pour de nombreuses raisons :
+\begin{itemize}
+    \item Bruit important dans la bande basse fréquence
+    \item Taille des antennes trop importante (longueur d'onde $\lambda = c/f$ trop grande)
+    \item Mauvaise adaptation d'impédance des antennes dans cette bande
+\end{itemize}
+
+Il convient donc d'effectuer une modulation d'une porteuse $P(t)$ de fréquence $f_0$ fixe (bien supérieure à 3 kHz) par le signal $S(t)$.
+
+\section{Modulation DSB (Double Side Band)}
+
+\subsection{Question A.1 : Calcul de M1(t) et analyse spectrale}
+
+\paragraph{Données}
+\begin{itemize}
+    \item Signal modulant : $S(t) = A_0 \cos(2\pi f_s t + \phi_s)$ avec $50$ Hz $< f_s <$ 3 kHz
+    \item Porteuse : $P(t) = B_0 \cos(2\pi f_0 t + \phi_0)$ avec $f_0 = 12$ kHz
+    \item Signal modulé DSB : $M_1(t) = k \cdot S(t) \cdot P(t)$
+\end{itemize}
+
+\paragraph{Calcul de M1(t)}
+
+En utilisant la formule de trigonométrie du produit de cosinus :
+\begin{equation}
+\cos(a) \cdot \cos(b) = \frac{1}{2}[\cos(a-b) + \cos(a+b)]
+\end{equation}
+
+On obtient :
+\begin{align}
+M_1(t) &= k \cdot A_0 \cos(2\pi f_s t + \phi_s) \cdot B_0 \cos(2\pi f_0 t + \phi_0) \\
+&= \frac{k A_0 B_0}{2} [\cos(2\pi(f_0 - f_s)t + \phi_0 - \phi_s) + \cos(2\pi(f_0 + f_s)t + \phi_0 + \phi_s)]
+\end{align}
+
+\begin{equation}
+\boxed{M_1(t) = \frac{k A_0 B_0}{2} [\cos(2\pi(f_0 - f_s)t + \Delta\phi_-) + \cos(2\pi(f_0 + f_s)t + \Delta\phi_+)]}
+\end{equation}
+
+avec $\Delta\phi_- = \phi_0 - \phi_s$ et $\Delta\phi_+ = \phi_0 + \phi_s$
+
+\paragraph{Allure temporelle de M1(t)}
+
+Le signal $M_1(t)$ est la somme de deux sinusoïdes de fréquences légèrement différentes $(f_0 - f_s)$ et $(f_0 + f_s)$. Cette somme produit un phénomène de \textbf{battement}.
+
+L'amplitude résultante varie entre 0 et $k A_0 B_0$ à une fréquence de battement égale à :
+\begin{equation}
+f_{batt} = |(f_0 + f_s) - (f_0 - f_s)| = 2f_s
+\end{equation}
+
+Le signal présente donc une enveloppe variant sinusoidalement à la fréquence du signal modulant $f_s$.
+
+\paragraph{Indice de modulation}
+
+Pour une modulation DSB pure (sans porteuse résiduelle), la notion classique d'indice de modulation n'est pas définie de manière standard. On peut toutefois définir un coefficient de modulation comme :
+
+\begin{equation}
+\boxed{m = \frac{A_0}{B_0}}
+\end{equation}
+
+Ce coefficient représente le rapport entre l'amplitude du signal modulant et celle de la porteuse.
+
+\paragraph{Spectre de M1(t) pour $f_s = 1.5$ kHz}
+
+Le spectre de $M_1(t)$ contient uniquement \textbf{deux raies spectrales} :
+
+\begin{itemize}
+    \item \textbf{Bande latérale inférieure (BLI)} : 
+    \begin{equation}
+    f_{BLI} = f_0 - f_s = 12 - 1.5 = 10.5 \text{ kHz}
+    \end{equation}
+    Amplitude : $\dfrac{k A_0 B_0}{2}$
+    
+    \item \textbf{Bande latérale supérieure (BLS)} : 
+    \begin{equation}
+    f_{BLS} = f_0 + f_s = 12 + 1.5 = 13.5 \text{ kHz}
+    \end{equation}
+    Amplitude : $\dfrac{k A_0 B_0}{2}$
+\end{itemize}
+
+\textbf{Remarque cruciale :} La fréquence porteuse $f_0 = 12$ kHz \textbf{n'apparaît pas} dans le spectre du signal modulé DSB. C'est une caractéristique fondamentale de ce type de modulation, qui pose des problèmes pour la démodulation.
+
+\paragraph{Cas d'une porteuse non sinusoïdale}
+
+Si la porteuse $P(t)$ n'est pas une sinusoïde pure mais un signal périodique, elle peut être décomposée en série de Fourier :
+\begin{equation}
+P(t) = \sum_{n=1}^{\infty} B_n \cos(2\pi n f_0 t + \phi_n)
+\end{equation}
+
+Chaque harmonique de rang $n$ génère alors deux bandes latérales :
+\begin{equation}
+M_1(t) \propto \sum_{n=1}^{\infty} k A_0 B_n [\cos(2\pi(n f_0 - f_s)t) + \cos(2\pi(n f_0 + f_s)t)]
+\end{equation}
+
+\textbf{Conséquence sur le spectre :} Le spectre en sortie contient des bandes latérales autour de \textbf{toutes les harmoniques} de la porteuse :
+\begin{itemize}
+    \item Autour de $f_0$ : raies à $(f_0 \pm f_s)$
+    \item Autour de $2f_0$ : raies à $(2f_0 \pm f_s)$
+    \item Autour de $3f_0$ : raies à $(3f_0 \pm f_s)$
+    \item etc.
+\end{itemize}
+
+Cela crée une \textbf{pollution spectrale importante} avec des interférences multiples. Pour une transmission efficace et sans distorsion, il est donc \textbf{impératif d'utiliser une porteuse sinusoïdale pure}.
+
+\subsection{Question A.2 : Oscillateur à 12 kHz}
+
+\paragraph{Analyse du circuit oscillateur}
+
+Le circuit de la figure 2 est un oscillateur à relaxation composé de deux étages :
+
+\begin{enumerate}
+    \item \textbf{Premier AOP (comparateur à hystérésis)} : Avec $R_1$ et $R_2$, il forme un trigger de Schmitt qui génère un signal carré $V_1$ alternant entre $+V_{sat}$ et $-V_{sat}$
+    
+    \item \textbf{Second AOP (intégrateur inverseur)} : Avec $R$ et $C$, il intègre le signal carré pour produire un signal triangulaire $V_2$
+    
+    \item \textbf{Filtre passe-bas RC} : Avec $R_c = 1.3$ k$\Omega$ et $C_c = 10$ nF, il extrait la composante fondamentale (sinusoïdale) du signal triangulaire pour obtenir $V_3$
+\end{enumerate}
+
+\paragraph{Formes d'onde}
+
+\textbf{En V1 (sortie du comparateur) :}
+\begin{itemize}
+    \item Signal carré alternant entre $+V_{sat} = +10$ V et $-V_{sat} = -10$ V
+    \item Transitions rapides (instantanées en première approximation)
+    \item Rapport cyclique de 50\%
+\end{itemize}
+
+\textbf{En V2 (sortie de l'intégrateur) :}
+\begin{itemize}
+    \item Signal triangulaire symétrique
+    \item Les rampes montantes et descendantes sont linéaires
+    \item L'amplitude dépend du rapport $R_2/R_1$ qui fixe les seuils de basculement du trigger
+\end{itemize}
+
+\paragraph{Expression de la fréquence d'oscillation}
+
+Le trigger de Schmitt possède deux seuils de basculement définis par le pont diviseur $R_1$-$R_2$ :
+\begin{equation}
+V_{seuil}^+ = +V_{sat} \cdot \frac{R_1}{R_1 + R_2} \quad \text{et} \quad V_{seuil}^- = -V_{sat} \cdot \frac{R_1}{R_1 + R_2}
+\end{equation}
+
+L'intégrateur génère une tension qui varie linéairement selon :
+\begin{equation}
+\frac{dV_2}{dt} = -\frac{V_1}{RC}
+\end{equation}
+
+Lorsque $V_1 = +V_{sat}$, la pente est négative : $\dfrac{dV_2}{dt} = -\dfrac{V_{sat}}{RC}$
+
+Le temps pour passer du seuil haut au seuil bas est :
+\begin{equation}
+t_{1/2} = \frac{\Delta V}{|dV_2/dt|} = \frac{2V_{sat} \cdot \frac{R_1}{R_1+R_2}}{V_{sat}/RC} = \frac{2R_1 RC}{R_1+R_2}
+\end{equation}
+
+La période complète des oscillations est $T = 2t_{1/2}$, d'où la fréquence :
+\begin{equation}
+\boxed{f_{osc} = \frac{1}{T} = \frac{R_1 + R_2}{4 R_1 RC}}
+\end{equation}
+
+\textbf{Conclusion :} La fréquence ne dépend que de $R_1$, $R_2$, $R$ et $C$. Elle est indépendante de $V_{sat}$.
+
+\paragraph{Dimensionnement pour $f_{osc} = 12$ kHz et amplitude 10 V pp}
+
+\textbf{Spécifications :}
+\begin{itemize}
+    \item Fréquence : $f_{osc} = 12$ kHz
+    \item Amplitude crête-à-crête en $V_3$ : 10 V pp (soit 5 V crête)
+    \item Filtre : $R_c = 1.3$ k$\Omega$, $C_c = 10$ nF $\Rightarrow f_c = \frac{1}{2\pi R_c C_c} = 12.2$ kHz
+\end{itemize}
+
+\textbf{Étape 1 : Choix du condensateur}
+
+Choisissons une valeur standard : $\boxed{C = 10 \text{ nF}}$
+
+\textbf{Étape 2 : Choix du rapport $R_2/R_1$}
+
+Pour un oscillateur stable avec une bonne amplitude triangulaire, on choisit typiquement :
+\begin{equation}
+\frac{R_2}{R_1} \approx 10 \quad \Rightarrow \quad R_2 = 10 R_1
+\end{equation}
+
+\textbf{Étape 3 : Calcul de R}
+
+De la formule de fréquence :
+\begin{equation}
+12000 = \frac{R_1 + 10R_1}{4 R_1 \cdot R \cdot 10 \times 10^{-9}} = \frac{11R_1}{4 R_1 \cdot R \cdot 10^{-8}} = \frac{11}{4R \times 10^{-8}}
+\end{equation}
+
+\begin{equation}
+R = \frac{11}{4 \times 12000 \times 10^{-8}} = \frac{11}{48 \times 10^{-4}} = 2291.7 \, \Omega
+\end{equation}
+
+Valeur normalisée : $\boxed{R = 2.2 \text{ k}\Omega}$
+
+\textbf{Étape 4 : Amplitude du signal triangulaire}
+
+L'amplitude crête-à-crête du signal triangulaire $V_2$ est :
+\begin{equation}
+V_{2,pp} = 4 V_{sat} \frac{R_1}{R_1 + R_2} = 4 \times 10 \times \frac{1}{11} = 3.64 \text{ V}
+\end{equation}
+
+\textbf{Étape 5 : Amplitude de la fondamentale}
+
+Pour un signal triangulaire, le développement en série de Fourier donne une amplitude de la fondamentale de :
+\begin{equation}
+V_{fond} = \frac{8}{\pi^2} V_{2,pp} = \frac{8}{\pi^2} \times 3.64 = 0.81 \times 3.64 = 2.95 \text{ V crête-à-crête}
+\end{equation}
+
+Cette amplitude est insuffisante pour obtenir 10 V pp. Il faut augmenter le rapport $R_2/R_1$.
+
+\textbf{Étape 6 : Ajustement pour 10 V pp}
+
+Pour obtenir 10 V pp en sortie du filtre, on a besoin d'un signal triangulaire de :
+\begin{equation}
+V_{2,pp} = \frac{10}{0.81} = 12.35 \text{ V}
+\end{equation}
+
+Cela nécessite :
+\begin{equation}
+\frac{R_1}{R_1 + R_2} = \frac{12.35}{4 \times 10} = 0.309 \quad \Rightarrow \quad \frac{R_2}{R_1} = 2.24
+\end{equation}
+
+\textbf{Dimensionnement final :}
+\begin{equation}
+\boxed{R_1 = 10 \text{ k}\Omega, \quad R_2 = 22 \text{ k}\Omega, \quad R = 2.2 \text{ k}\Omega, \quad C = 10 \text{ nF}}
+\end{equation}
+
+Vérification de la fréquence :
+\begin{equation}
+f_{osc} = \frac{10 + 22}{4 \times 10 \times 2.2 \times 10^{-9} \times 10^4} = \frac{32}{88 \times 10^{-2}} = 11.8 \text{ kHz} \approx 12 \text{ kHz}
+\end{equation}
+
+\subsection{Question A.3 : Multiplication avec le circuit AD633}
+
+\paragraph{Fonction du circuit AD633}
+
+Le multiplieur analogique AD633 réalise la fonction :
+\begin{equation}
+V_{out} = \frac{(X_1 - X_0)(Y_1 - Y_0)}{10\text{ V}} + Z
+\end{equation}
+
+Les entrées différentielles $X$ et $Y$ permettent de multiplier deux signaux, avec un facteur d'échelle de 10 V pour limiter l'amplitude de sortie.
+
+\paragraph{Plan de câblage pour obtenir $M_1(t) = S(t) \cdot P(t) / 10$}
+
+\textbf{Objectif :} Réaliser la modulation DSB avec $M_1(t) = \dfrac{S(t) \cdot P(t)}{10}$
+
+\textbf{Connexions proposées :}
+\begin{itemize}
+    \item $X_1$ : Signal modulant $S(t)$ du GBF (10 V pp, 1.5 kHz)
+    \item $X_0$ : Masse (0 V)
+    \item $Y_1$ : Porteuse $P(t)$ de l'oscillateur, point $V_3$ (10 V pp, 12 kHz)
+    \item $Y_0$ : Masse (0 V)
+    \item $Z$ : Masse (0 V)
+    \item $V_{CC+}$ : +12 V (alimentation positive)
+    \item $V_{CC-}$ : -12 V (alimentation négative)
+    \item $out$ : Signal modulé $M_1(t)$
+\end{itemize}
+
+Avec ce câblage, on obtient :
+\begin{equation}
+\boxed{V_{out} = M_1(t) = \frac{S(t) \cdot P(t)}{10 \text{ V}}}
+\end{equation}
+
+\paragraph{Analyse de la démodulation DSB}
+
+La démodulation s'effectue en multipliant $M_1(t)$ par une porteuse locale $P_L(t) = B'_0 \cos(2\pi f_0 t + \phi_0)$, puis en filtrant.
+
+Calculons le produit :
+\begin{align}
+D_1(t) &= M_1(t) \cdot P_L(t) \\
+&= \frac{k A_0 B_0}{2}[\cos(2\pi(f_0-f_s)t) + \cos(2\pi(f_0+f_s)t)] \cdot B'_0 \cos(2\pi f_0 t)
+\end{align}
+
+En développant chaque terme avec la formule du produit :
+\begin{align}
+D_1(t) = \frac{k A_0 B_0 B'_0}{4} [&\cos(2\pi(f_0-f_s-f_0)t) + \cos(2\pi(f_0-f_s+f_0)t) \\
+&+ \cos(2\pi(f_0+f_s-f_0)t) + \cos(2\pi(f_0+f_s+f_0)t)]
+\end{align}
+
+\begin{equation}
+D_1(t) = \frac{k A_0 B_0 B'_0}{4} [\cos(2\pi f_s t) + \cos(2\pi(2f_0-f_s)t) + \cos(2\pi f_s t) + \cos(2\pi(2f_0+f_s)t)]
+\end{equation}
+
+\begin{equation}
+\boxed{D_1(t) = \frac{k A_0 B_0 B'_0}{2} \cos(2\pi f_s t) + \frac{k A_0 B_0 B'_0}{4}[\cos(2\pi(2f_0-f_s)t) + \cos(2\pi(2f_0+f_s)t)]}
+\end{equation}
+
+Le premier terme est proportionnel à $S(t)$. Les deux autres termes sont à haute fréquence :
+\begin{itemize}
+    \item $(2f_0 - f_s) = 24 - 1.5 = 22.5$ kHz
+    \item $(2f_0 + f_s) = 24 + 1.5 = 25.5$ kHz
+\end{itemize}
+
+Un filtre passe-bas de fréquence de coupure 3 kHz élimine ces composantes HF.
+
+\paragraph{Problème de la démodulation DSB}
+
+\textbf{Inconvénient majeur :} Cette méthode nécessite que la porteuse locale $P_L(t)$ soit :
+\begin{itemize}
+    \item Parfaitement \textbf{synchrone en fréquence} avec la porteuse de l'émetteur ($f_0$ exact)
+    \item Parfaitement \textbf{en phase} avec la porteuse de l'émetteur ($\phi_0$ correct)
+\end{itemize}
+
+Or, le signal modulé DSB \textbf{ne contient pas la fréquence porteuse} $f_0$. Il faut donc :
+\begin{itemize}
+    \item Soit disposer d'un oscillateur local très stable et synchronisé (complexe et coûteux)
+    \item Soit reconstituer la porteuse à partir des bandes latérales (circuit complexe : boucle de Costas, boucle à verrouillage de phase PLL, etc.)
+\end{itemize}
+
+Cette complexité justifie l'utilisation de la modulation d'amplitude classique (AM) pour les applications grand public.
+
+\section{Modulation AM (Amplitude Modulation)}
+
+\subsection{Question B.1 : Calcul de M2(t) et analyse}
+
+\paragraph{Principe de la modulation AM}
+
+Pour éviter les problèmes de reconstitution de porteuse, on ajoute la porteuse au signal modulé DSB :
+\begin{equation}
+M_2(t) = P(t) + k \cdot S(t) \cdot P(t) = P(t)[1 + k \cdot S(t)]
+\end{equation}
+
+\paragraph{Expression mathématique de M2(t)}
+
+Avec $S(t) = A_0 \cos(2\pi f_s t)$ et $P(t) = B_0 \cos(2\pi f_0 t)$ :
+\begin{equation}
+\boxed{M_2(t) = B_0[1 + k A_0 \cos(2\pi f_s t)] \cos(2\pi f_0 t)}
+\end{equation}
+
+Cette expression peut aussi s'écrire :
+\begin{equation}
+M_2(t) = B_0[1 + m \cos(2\pi f_s t)] \cos(2\pi f_0 t)
+\end{equation}
+
+où $m = k A_0$ est l'indice de modulation.
+
+\paragraph{Indice de modulation}
+
+L'indice de modulation est défini par :
+\begin{equation}
+\boxed{m = k A_0 = \frac{\text{Amplitude max} - \text{Amplitude min}}{\text{Amplitude max} + \text{Amplitude min}}}
+\end{equation}
+
+L'amplitude instantanée de $M_2(t)$ varie entre :
+\begin{itemize}
+    \item Amplitude maximale : $A_{max} = B_0(1 + m)$
+    \item Amplitude minimale : $A_{min} = B_0(1 - m)$
+\end{itemize}
+
+D'où :
+\begin{equation}
+m = \frac{B_0(1+m) - B_0(1-m)}{B_0(1+m) + B_0(1-m)} = \frac{2m}{2} = m
+\end{equation}
+
+\paragraph{Allure temporelle pour différents indices de modulation}
+
+\textbf{Cas 1 : $m = 0.5$ (sous-modulation)}
+
+\begin{itemize}
+    \item Amplitude varie entre $B_0(1-0.5) = 0.5 B_0$ et $B_0(1+0.5) = 1.5 B_0$
+    \item L'enveloppe ne s'annule jamais
+    \item Signal bien modulé, sans distorsion
+    \item L'enveloppe reproduit fidèlement la forme du signal modulant
+\end{itemize}
+
+\textbf{Cas 2 : $m = 1$ (modulation à 100\%)}
+
+\begin{itemize}
+    \item Amplitude varie entre $B_0(1-1) = 0$ et $B_0(1+1) = 2 B_0$
+    \item L'enveloppe s'annule aux extrema du signal modulant
+    \item Cas optimal : puissance utile maximale dans les bandes latérales
+    \item L'enveloppe touche juste l'axe du temps sans changement de phase
+\end{itemize}
+
+\textbf{Cas 3 : $m = 2$ (surmodulation)}
+
+\begin{itemize}
+    \item Amplitude « devrait » varier entre $B_0(1-2) = -B_0$ et $B_0(1+2) = 3 B_0$
+    \item La valeur négative implique un \textbf{renversement de phase} de la porteuse
+    \item L'enveloppe présente des discontinuités
+    \item \textbf{Distorsion importante} : le signal démodulé ne reproduit plus fidèlement $S(t)$
+    \item Génération d'harmoniques parasites dans le spectre
+\end{itemize}
+
+\paragraph{Spectres de M2(t)}
+
+En développant l'expression de $M_2(t)$ :
+\begin{align}
+M_2(t) &= B_0\cos(2\pi f_0 t) + m B_0 \cos(2\pi f_s t) \cos(2\pi f_0 t) \\
+&= B_0\cos(2\pi f_0 t) + \frac{m B_0}{2}[\cos(2\pi(f_0-f_s)t) + \cos(2\pi(f_0+f_s)t)]
+\end{align}
+
+Le spectre contient \textbf{trois raies} :
+
+\begin{itemize}
+    \item \textbf{Porteuse} : $f = f_0 = 12$ kHz, amplitude $B_0$
+    \item \textbf{BLI} : $f = f_0 - f_s = 10.5$ kHz, amplitude $\dfrac{m B_0}{2}$
+    \item \textbf{BLS} : $f = f_0 + f_s = 13.5$ kHz, amplitude $\dfrac{m B_0}{2}$
+\end{itemize}
+
+\textbf{Analyse selon l'indice de modulation :}
+
+\begin{itemize}
+    \item $m = 0.5$ : BLI et BLS d'amplitude $0.25 B_0$ (1/4 de la porteuse)
+    \item $m = 1$ : BLI et BLS d'amplitude $0.5 B_0$ (1/2 de la porteuse)
+    \item $m = 2$ : BLI et BLS d'amplitude $B_0$ (égale à la porteuse) + harmoniques de distorsion
+\end{itemize}
+
+\textbf{Répartition de puissance :}
+
+Pour $m = 1$ (modulation optimale), la puissance est répartie ainsi :
+\begin{itemize}
+    \item Porteuse : $\dfrac{2}{3}$ de la puissance totale
+    \item BLI + BLS : $\dfrac{1}{3}$ de la puissance totale (information utile)
+\end{itemize}
+
+Cela montre que la modulation AM est peu efficace énergétiquement puisque la majorité de la puissance est dans la porteuse qui ne transporte aucune information.
+
+\subsection{Question B.2 : Réalisation d'un modulateur AM}
+
+\paragraph{Analyse du montage de la figure 5}
+
+Le montage réalise la modulation AM en deux étapes :
+\begin{enumerate}
+    \item \textbf{Multiplieur AD633} : Génère $M'_1(t) = \dfrac{S(t) \cdot P(t)}{10}$ (terme DSB)
+    \item \textbf{Sommateur-amplificateur inverseur} : Ajoute la porteuse et ajuste le gain
+\end{enumerate}
+
+L'amplificateur sommateur réalise :
+\begin{equation}
+M_2(t) = -\frac{R_2}{R_1} M'_1(t) - \frac{R_2}{R} P(t)
+\end{equation}
+
+En factorisant par $-\dfrac{R_2}{R}$ et en posant $R = R_1$ :
+\begin{equation}
+M_2(t) = -\frac{R_2}{R}[M'_1(t) + P(t)] = -\frac{R_2}{R}\left[\frac{S(t)P(t)}{10} + P(t)\right]
+\end{equation}
+
+\begin{equation}
+M_2(t) = -\frac{R_2}{R} P(t)\left[1 + \frac{S(t)}{10}\right]
+\end{equation}
+
+Le signe moins correspond à l'inversion, sans conséquence sur l'enveloppe.
+
+\paragraph{Gain maximal sans saturation}
+
+\textbf{Données :}
+\begin{itemize}
+    \item Amplitudes d'entrée : $S(t)$ et $P(t)$ : 10 V pp $\Rightarrow$ 5 V crête
+    \item Alimentations : $\pm 12$ V
+    \item Tensions de saturation des AOP TL081 : $\pm 10$ V
+\end{itemize}
+
+\textbf{Calcul de l'amplitude en sortie du multiplieur :}
+
+Pour $S(t) = 5\cos(\omega_s t)$ et $P(t) = 5\cos(\omega_0 t)$ :
+\begin{equation}
+M'_1(t)_{max} = \frac{5 \times 5}{10} = 2.5 \text{ V crête}
+\end{equation}
+
+\textbf{Amplitude maximale de M2(t) :}
+
+Pour une modulation à 100\% ($m = 1$), l'amplitude maximale de $M_2(t)$ est :
+\begin{equation}
+|M_2(t)|_{max} = |P(t)|_{crête} \times (1 + m) = 5 \times 2 = 10 \text{ V}
+\end{equation}
+
+Avec le gain $G = \dfrac{R_2}{R}$ du sommateur :
+\begin{equation}
+|M_2(t)|_{sortie} = G \times 10 \text{ V}
+\end{equation}
+
+Pour éviter la saturation à $\pm 10$ V :
+\begin{equation}
+G \times 10 \leq 10 \quad \Rightarrow \quad G \leq 1
+\end{equation}
+
+Cependant, pour avoir une amplitude de sortie raisonnable et pouvoir ajuster l'indice de modulation, on peut tolérer un gain plus élevé en travaillant avec $m < 1$ :
+
+\begin{equation}
+\boxed{G_{max} \approx 2 \text{ à } 3}
+\end{equation}
+
+Avec $R = R_1 = 10$ k$\Omega$, on peut utiliser :
+\begin{itemize}
+    \item Un potentiomètre de $R_2 = 47$ k$\Omega$ pour un réglage de 0 à 4.7
+    \item Ou une résistance fixe $R_2 = 22$ k$\Omega$ pour $G = 2.2$
+\end{itemize}
+
+\paragraph{Expression de l'indice de modulation}
+
+L'indice de modulation dépend du gain du sommateur et des amplitudes des signaux :
+
+\begin{equation}
+m = \frac{\text{Amplitude des bandes latérales}}{\text{Amplitude de la porteuse}} = \frac{R_2/R_1 \times S(t)_{crête}/10}{R_2/R \times P(t)_{crête}}
+\end{equation}
+
+Avec $R = R_1$ et $S(t)_{crête} = P(t)_{crête} = 5$ V :
+\begin{equation}
+\boxed{m = \frac{S(t)_{crête}}{10} = \frac{5}{10} = 0.5}
+\end{equation}
+
+Pour obtenir un indice de modulation de 1, il faudrait doubler l'amplitude du signal modulant ou modifier le circuit.
+
+\section{Démodulation}
+
+\subsection{Question C.1 : Démodulation par détection d'enveloppe}
+
+\paragraph{Principe de la détection d'enveloppe}
+
+La détection d'enveloppe consiste à extraire l'enveloppe du signal modulé AM pour retrouver le signal modulant $S(t)$.
+
+\paragraph{Condition sur l'indice de modulation}
+
+La détection d'enveloppe ne fonctionne correctement que si \textbf{l'enveloppe ne change jamais de signe}, c'est-à-dire si :
+
+\begin{equation}
+\boxed{m \leq 1}
+\end{equation}
+
+\textbf{Justification :}
+\begin{itemize}
+    \item Pour $m \leq 1$ : L'enveloppe $E(t) = B_0[1 + m\cos(2\pi f_s t)] \geq 0$ reste toujours positive
+    \item Pour $m > 1$ : L'enveloppe devient négative, ce qui correspond à un renversement de phase de la porteuse. Le détecteur d'enveloppe ne peut pas distinguer ce renversement et produit un signal démodulé distordu
+\end{itemize}
+
+\paragraph{Principe du détecteur de crête}
+
+Le montage détecteur de crête (figure 6) comporte :
+\begin{itemize}
+    \item \textbf{Diode D} : Redresse le signal (ne laisse passer que les alternances positives)
+    \item \textbf{Condensateur C} : Se charge rapidement aux crêtes et stocke la tension
+    \item \textbf{Résistance R} : Permet la décharge lente du condensateur
+\end{itemize}
+
+\paragraph{Choix de la constante de temps RC}
+
+La constante de temps $\tau = RC$ doit satisfaire deux conditions contradictoires :
+
+\textbf{Condition 1 : Filtrer la porteuse}
+
+Le condensateur doit maintenir sa charge entre deux alternances de la porteuse :
+\begin{equation}
+\tau \gg T_0 = \frac{1}{f_0} = \frac{1}{12000} = 83.3 \, \mu\text{s}
+\end{equation}
+
+Si cette condition n'est pas respectée, le condensateur se décharge trop vite et la tension de sortie présente une ondulation résiduelle à $f_0$.
+
+\textbf{Condition 2 : Suivre les variations du signal modulant}
+
+Le condensateur doit pouvoir se décharger assez rapidement pour suivre la décroissance de l'enveloppe :
+\begin{equation}
+\tau \ll T_s = \frac{1}{f_{s,max}} = \frac{1}{3000} = 333 \, \mu\text{s}
+\end{equation}
+
+Plus précisément, pour suivre la pente maximale de l'enveloppe, il faut :
+\begin{equation}
+\frac{B_0}{\tau} \geq \left|\frac{dE(t)}{dt}\right|_{max} = B_0 m \omega_s
+\end{equation}
+
+D'où :
+\begin{equation}
+\tau \leq \frac{1}{m \omega_s} = \frac{1}{2\pi m f_s}
+\end{equation}
+
+Pour $m = 1$ et $f_s = 3$ kHz :
+\begin{equation}
+\tau \leq \frac{1}{2\pi \times 3000} = 53 \, \mu\text{s}
+\end{equation}
+
+\textbf{Compromis optimal :}
+
+Il faut trouver un compromis entre ces deux conditions :
+\begin{equation}
+\boxed{\frac{1}{f_0} \ll \tau \ll \frac{1}{m \cdot 2\pi f_s}}
+\end{equation}
+
+\begin{equation}
+83 \, \mu\text{s} \ll \tau \ll 333 \, \mu\text{s}
+\end{equation}
+
+\textbf{Valeur recommandée :}
+
+Un bon compromis est :
+\begin{equation}
+\boxed{\tau = RC \approx 100 \text{ à } 150 \, \mu\text{s}}
+\end{equation}
+
+Par exemple : $R = 10$ k$\Omega$ et $C = 10$ nF $\Rightarrow \tau = 100$ µs
+
+\textbf{Remarque :} Pour $m$ proche de 1 et $f_s = 3$ kHz, le compromis devient difficile et la démodulation par détection d'enveloppe atteint ses limites. On observe alors une distorsion diagonale sur l'enveloppe descendante.
+
+\subsection{Question C.2 : Démodulation par produit}
+
+\paragraph{Principe}
+
+La démodulation par produit (ou démodulation synchrone) consiste à multiplier le signal modulé par la porteuse, puis à filtrer le résultat pour extraire le signal modulant.
+
+\paragraph{Produit D1(t) = M1(t) · P(t) pour la modulation DSB}
+
+Rappel : $M_1(t) = \dfrac{k A_0 B_0}{2}[\cos(2\pi(f_0-f_s)t) + \cos(2\pi(f_0+f_s)t)]$
+
+En multipliant par $P(t) = B_0 \cos(2\pi f_0 t)$ :
+
+\begin{align}
+D_1(t) &= \frac{k A_0 B_0^2}{2} [\cos(2\pi(f_0-f_s)t) + \cos(2\pi(f_0+f_s)t)] \cos(2\pi f_0 t)
+\end{align}
+
+En développant avec la formule du produit de cosinus :
+\begin{align}
+D_1(t) = \frac{k A_0 B_0^2}{4} [&\cos(2\pi f_s t) + \cos(2\pi(2f_0-f_s)t) \\
+&+ \cos(2\pi f_s t) + \cos(2\pi(2f_0+f_s)t)]
+\end{align}
+
+\begin{equation}
+\boxed{D_1(t) = \frac{k A_0 B_0^2}{2} \cos(2\pi f_s t) + \frac{k A_0 B_0^2}{4}[\cos(2\pi(2f_0-f_s)t) + \cos(2\pi(2f_0+f_s)t)]}
+\end{equation}
+
+\textbf{Terme utile :} $\dfrac{k A_0 B_0^2}{2} \cos(2\pi f_s t)$ proportionnel à $S(t)$
+
+\paragraph{Produit D2(t) = M2(t) · P(t) pour la modulation AM}
+
+Avec $M_2(t) = B_0[1 + k A_0 \cos(2\pi f_s t)] \cos(2\pi f_0 t)$ :
+
+\begin{align}
+D_2(t) &= B_0[1 + k A_0 \cos(2\pi f_s t)] \cos(2\pi f_0 t) \times B_0 \cos(2\pi f_0 t) \\
+&= B_0^2[1 + k A_0 \cos(2\pi f_s t)] \cos^2(2\pi f_0 t)
+\end{align}
+
+En utilisant $\cos^2(x) = \dfrac{1 + \cos(2x)}{2}$ :
+
+\begin{equation}
+D_2(t) = \frac{B_0^2}{2}[1 + k A_0 \cos(2\pi f_s t)][1 + \cos(4\pi f_0 t)]
+\end{equation}
+
+En développant :
+\begin{align}
+D_2(t) = \frac{B_0^2}{2}[1 + k A_0 \cos(2\pi f_s t)] + \frac{B_0^2}{2}[1 + k A_0 \cos(2\pi f_s t)]\cos(4\pi f_0 t)
+\end{align}
+
+\begin{equation}
+\boxed{D_2(t) = \frac{B_0^2}{2} + \frac{k A_0 B_0^2}{2}\cos(2\pi f_s t) + \text{termes HF à } 2f_0 \text{ et } 2f_0 \pm f_s}
+\end{equation}
+
+\textbf{Terme utile :} $\dfrac{k A_0 B_0^2}{2}\cos(2\pi f_s t) = \dfrac{m B_0^2}{2}\cos(2\pi f_s t)$
+
+\paragraph{Fréquences des termes parasites}
+
+Pour les deux démodulations, les termes parasites sont situés aux fréquences :
+
+\begin{itemize}
+    \item \textbf{Composante continue} : 0 Hz (uniquement pour $D_2$)
+    \item \textbf{Double fréquence porteuse} : $2f_0 = 24$ kHz
+    \item \textbf{Bandes latérales autour de $2f_0$} :
+    \begin{itemize}
+        \item $2f_0 - f_s = 24 - 1.5 = 22.5$ kHz
+        \item $2f_0 + f_s = 24 + 1.5 = 25.5$ kHz
+    \end{itemize}
+\end{itemize}
+
+Toutes ces fréquences sont \textbf{très supérieures à 3 kHz} et seront facilement éliminées par un filtre passe-bas.
+
+\paragraph{Allures de D1(t) et D2(t)}
+
+\textbf{Pour D1(t) (démodulation DSB) :}
+\begin{itemize}
+    \item \textbf{$m = 0.5$} : Sinusoïde à 1.5 kHz d'amplitude $\dfrac{k A_0 B_0^2}{2}$ superposée à des composantes HF
+    \item \textbf{$m = 1$} : Amplitude doublée du terme à 1.5 kHz
+    \item \textbf{$m = 2$} : Amplitude quadruplée du terme à 1.5 kHz
+\end{itemize}
+
+\textbf{Pour D2(t) (démodulation AM) :}
+\begin{itemize}
+    \item \textbf{$m = 0.5$} : Composante continue + sinusoïde à 1.5 kHz + composantes HF à 24 kHz
+    \item \textbf{$m = 1$} : Même forme, amplitude du terme utile doublée
+    \item \textbf{$m = 2$} : Même forme, amplitude du terme utile quadruplée (attention à la saturation)
+\end{itemize}
+
+Dans les deux cas, après filtrage passe-bas, seul le terme proportionnel à $\cos(2\pi f_s t)$ subsiste, permettant de récupérer le signal modulant.
+
+\textbf{Avantages de la démodulation par produit :}
+\begin{itemize}
+    \item Fonctionne pour tout indice de modulation (même $m > 1$)
+    \item Pas de distorsion d'enveloppe
+    \item Meilleur rapport signal/bruit
+    \item Nécessite cependant une porteuse locale synchrone
+\end{itemize}
+
+\subsection{Question C.3 : Filtrage}
+
+\paragraph{Principe du filtrage}
+
+Pour obtenir le signal $S(t)$ seul, il faut filtrer les signaux $D_1(t)$ et $D_2(t)$ afin de supprimer tous les termes haute fréquence.
+
+\textbf{Spécifications du filtre :}
+\begin{itemize}
+    \item Bande passante : 100 Hz à 3 kHz (bande du signal audio)
+    \item Fréquences à atténuer : $\geq 22.5$ kHz
+    \item Type : Filtre passe-bas de Butterworth d'ordre 5
+    \item Circuit : LTC1062 (filtre à capacités commutées)
+\end{itemize}
+
+\paragraph{Filtre LTC1062}
+
+Le circuit LTC1062 contient un filtre passe-bas de Butterworth d'ordre 5. Sa fréquence de coupure est déterminée par la fréquence d'horloge $f_{CK}$ :
+
+\begin{equation}
+f_c = \frac{f_{CK}}{100}
+\end{equation}
+
+Pour une fréquence de coupure $f_c = 3$ kHz :
+\begin{equation}
+\boxed{f_{CK} = 100 \times 3000 = 300 \text{ kHz}}
+\end{equation}
+
+\paragraph{Génération de l'horloge (Figure 8)}
+
+L'oscillateur à portes NAND Trigger (CD4093) génère un signal carré dont la fréquence est donnée par :
+\begin{equation}
+f = \frac{1}{2.2 RC}
+\end{equation}
+
+\textbf{Calcul de R et C pour $f_{CK} = 300$ kHz :}
+
+\begin{equation}
+RC = \frac{1}{2.2 \times 300000} = \frac{1}{660000} = 1.515 \times 10^{-6} \text{ s}
+\end{equation}
+
+\textbf{Choix des composants :}
+
+Option 1 : Avec $C = 1$ nF
+\begin{equation}
+R = \frac{1.515 \times 10^{-6}}{10^{-9}} = 1515 \, \Omega
+\end{equation}
+
+\begin{equation}
+\boxed{R = 1.5 \text{ k}\Omega, \quad C = 1 \text{ nF}}
+\end{equation}
+
+Option 2 : Avec $C = 2.2$ nF (valeur plus courante)
+\begin{equation}
+R = \frac{1.515 \times 10^{-6}}{2.2 \times 10^{-9}} = 689 \, \Omega
+\end{equation}
+
+\begin{equation}
+\boxed{R = 680 \, \Omega, \quad C = 2.2 \text{ nF}}
+\end{equation}
+
+\paragraph{Atténuation des termes parasites}
+
+Un filtre de Butterworth d'ordre 5 présente une atténuation en dehors de la bande passante de :
+\begin{equation}
+A(f) = -10 \times 5 \times \log_{10}\left(\frac{f}{f_c}\right) = -50 \log_{10}\left(\frac{f}{f_c}\right) \text{ dB/décade}
+\end{equation}
+
+Soit une pente de \textbf{-100 dB/décade} (en réalité $-50 \times 2 = -100$ dB pour un ordre 5).
+
+\textbf{Pour les termes à $2f_0 \pm f_s \approx 24$ kHz :}
+
+Le rapport de fréquences est :
+\begin{equation}
+\frac{24000}{3000} = 8
+\end{equation}
+
+L'atténuation approximative (à plus d'une décade) :
+\begin{equation}
+A_{dB} = -100 \times \log_{10}(8) = -100 \times 0.903 \approx -90 \text{ dB}
+\end{equation}
+
+\begin{equation}
+\boxed{\text{Atténuation à 24 kHz : environ } -90 \text{ dB}}
+\end{equation}
+
+Cela correspond à un rapport d'amplitude de :
+\begin{equation}
+\frac{V_{out}}{V_{in}} = 10^{-90/20} = 10^{-4.5} = 3.16 \times 10^{-5} \approx 0.003\%
+\end{equation}
+
+\textbf{Pour la composante à $2f_0 = 24$ kHz :}
+
+L'atténuation est la même, environ -90 dB.
+
+\textbf{Conclusion :}
+
+Les composantes haute fréquence sont \textbf{très efficacement supprimées}. Le signal démodulé en sortie du filtre est une réplique quasi-parfaite du signal modulant $S(t)$, avec :
+\begin{itemize}
+    \item Une distorsion harmonique négligeable
+    \item Un taux d'ondulation résiduelle de la porteuse inférieur à 0.01\%
+    \item Un excellent rapport signal/bruit
+\end{itemize}
+
+Le système de modulation-démodulation AM est ainsi complet et fonctionnel.
+
+\vspace{1cm}
+
+\end{document}
